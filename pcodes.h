@@ -68,7 +68,15 @@ extern "C"
 #endif
 
 #include <stddef.h>		/* size_t */
-#include <stdint.h>		/* uint32_t */
+
+#ifdef _MSC_VER
+  #include <windows.h>
+  typedef int ssize_t;
+  typedef unsigned int uint32_t;
+#else
+  #include <stdint.h>		/* uint32_t */
+ #endif
+
 
   enum punycode_status
   {

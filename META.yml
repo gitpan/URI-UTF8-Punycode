@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                URI-UTF8-Punycode
-version:             0.01
+version:             0.90
 abstract:            Punycode conversion of UTF-8 string.
 license:             gpl
 author:              

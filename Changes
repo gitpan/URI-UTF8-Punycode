@@ -1,5 +1,8 @@
 Revision history for Perl extension URI::UTF8::Punycode.
 
+0.90  Fri Sep 25 03:40:00 2010
+	decoding --- ignoring "xn--" was automated.
+
 0.01  Fri Sep 24 21:10:28 2010
 	- original version; created by h2xs 1.23 with options
 		-A -n URI::UTF8::Punycode

@@ -23,8 +23,15 @@
 # define _STRINGPREP_H
 
 # include <stddef.h>		/* size_t */
-# include <unistd.h>		/* ssize_t */
-# include <stdint.h>		/* uint32_t */
+
+#ifdef _MSC_VER
+  #include <windows.h>
+  typedef int ssize_t;
+  typedef unsigned int uint32_t;
+#else
+  #include <stdint.h>		/* uint32_t */
+  #include <unistd.h>		/* ssize_t */
+ #endif
 
 # define STRINGPREP_VERSION "1.19"
 
