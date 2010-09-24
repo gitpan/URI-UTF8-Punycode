@@ -1,0 +1,15 @@
+Changes
+idnfkc.c
+lib/URI/UTF8/Punycode.pm
+Makefile.PL
+MANIFEST
+mypuny.c
+pcodes.c
+pcodes.h
+ppport.h
+Punycode.xs
+README
+spreps.h
+strerr.c
+t/URI-UTF8-Punycode.t
+META.yml                                 Module meta-data (added by MakeMaker)
