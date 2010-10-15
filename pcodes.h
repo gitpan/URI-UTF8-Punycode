@@ -75,8 +75,7 @@ extern "C"
   typedef unsigned int uint32_t;
 #else
   #include <stdint.h>		/* uint32_t */
- #endif
-
+#endif
 
   enum punycode_status
   {

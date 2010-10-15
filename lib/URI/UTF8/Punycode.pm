@@ -9,7 +9,7 @@ our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw($VERSION);
 our @EXPORT    = qw(puny_enc puny_dec);
 
-our $VERSION = '0.90';
+our $VERSION = '0.95';
 
 use XSLoader;
 XSLoader::load('URI::UTF8::Punycode', $VERSION);

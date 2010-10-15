@@ -1,9 +1,9 @@
 Changes
 idnfkc.c
 lib/URI/UTF8/Punycode.pm
+LICENSE
 Makefile.PL
 MANIFEST
-mypuny.c
 pcodes.c
 pcodes.h
 ppport.h

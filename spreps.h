@@ -20,9 +20,9 @@
  */
 
 #ifndef _STRINGPREP_H
-# define _STRINGPREP_H
+#define _STRINGPREP_H
 
-# include <stddef.h>		/* size_t */
+#include <stddef.h>		/* size_t */
 
 #ifdef _MSC_VER
   #include <windows.h>
@@ -31,9 +31,9 @@
 #else
   #include <stdint.h>		/* uint32_t */
   #include <unistd.h>		/* ssize_t */
- #endif
+#endif
 
-# define STRINGPREP_VERSION "1.19"
+#define STRINGPREP_VERSION "1.19"
 
 extern uint32_t *stringprep_utf8_to_ucs4 (const char *str,
 						   ssize_t len,

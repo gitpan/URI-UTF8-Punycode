@@ -1,6 +1,9 @@
 Revision history for Perl extension URI::UTF8::Punycode.
 
-0.90  Fri Sep 25 03:40:00 2010
+0.95  Fri Oct 10 18:00:00 2010
+	has error, punycode_strerror() to Perl_croak().
+
+0.90  Sat Sep 25 03:40:00 2010
 	decoding --- ignoring "xn--" was automated.
 
 0.01  Fri Sep 24 21:10:28 2010
