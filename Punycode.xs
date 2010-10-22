@@ -16,7 +16,7 @@ int length(void *ptr)
   return strlen(chr);
 }
 
-char *_puny_enc(pTHX,char *i)
+char *_puny_enc(pTHX_ char *i)
 {
   size_t lu, lp;
   uint32_t *q;
@@ -40,7 +40,7 @@ char *_puny_enc(pTHX,char *i)
   return p;
 }
 
-char *_puny_dec(pTHX,char *i)
+char *_puny_dec(pTHX_ char *i)
 {
   size_t lp;
   uint32_t *q;

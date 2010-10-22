@@ -1,8 +1,8 @@
 --- #YAML:1.0
 name:                URI-UTF8-Punycode
-version:             0.95
+version:             0.96
 abstract:            Punycode conversion of UTF-8 string.
-license:             GPL
+license:             GPL_3
 author:              
     - Twinkle Computing <twinkle@cpan.org>
 generated_by:        ExtUtils::MakeMaker version 6.42
