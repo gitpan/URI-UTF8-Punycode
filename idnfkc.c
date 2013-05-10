@@ -46,30 +46,56 @@
 #define gssize ssize_t
 #define g_malloc malloc
 #define g_free free
-#define g_new(struct_type, n_structs)					\
-  ((struct_type *) g_malloc (((gsize) sizeof (struct_type)) * ((gsize) (n_structs))))
-#  if defined (__GNUC__) && !defined (__STRICT_ANSI__) && !defined (__cplusplus)
-#    define G_STMT_START	(void)(
-#    define G_STMT_END		)
-#  else
-#    if (defined (sun) || defined (__sun__))
-#      define G_STMT_START	if (1)
-#      define G_STMT_END	else (void)0
-#    else
-#      define G_STMT_START	do
-#      define G_STMT_END	while (0)
-#    endif
-#  endif
-#define g_return_val_if_fail(expr,val)		G_STMT_START{ (void)0; }G_STMT_END
-#define G_N_ELEMENTS(arr)		(sizeof (arr) / sizeof ((arr)[0]))
-#ifndef TRUE
-  #define TRUE 1
-#endif
-#ifndef FALSE
-  #define FALSE 0
-#endif
+#define g_return_val_if_fail(expr,val)	{		\
+    if (!(expr))					\
+      return (val);					\
+  }
 
-/* Code from GLIB gutf8.c starts here. */
+/* Code from GLIB gmacros.h starts here. */
+
+/* GLIB - Library of useful routines for C programming
+ * Copyright (C) 1995-1997  Peter Mattis, Spencer Kimball and Josh MacDonald
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#define G_UNLIKELY(expr) (expr)
+
+/* Code from GLIB gunicode.h starts here. */
+
+/* gunicode.h - Unicode manipulation functions
+ *
+ *  Copyright (C) 1999, 2000 Tom Tromey
+ *  Copyright 2000, 2005 Red Hat, Inc.
+ *
+ * The Gnome Library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * The Gnome Library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with the Gnome Library; see the file COPYING.LIB.  If not,
+ * write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *   Boston, MA 02111-1307, USA.
+ */
 
 #define UTF8_LENGTH(Char)			\
   ((Char) < 0x80 ? 1 :				\
@@ -77,7 +103,6 @@
     ((Char) < 0x10000 ? 3 :			\
      ((Char) < 0x200000 ? 4 :			\
       ((Char) < 0x4000000 ? 5 : 6)))))
-
 
 static const gchar utf8_skip_data[256] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -98,13 +123,13 @@ static const gchar utf8_skip_data[256] = {
   5, 5, 5, 6, 6, 1, 1
 };
 
-static const gchar *const g_utf8_skip = utf8_skip_data;
+const gchar *const g_utf8_skip = utf8_skip_data;
 
 #define g_utf8_next_char(p) ((p) + g_utf8_skip[*(const guchar *)(p)])
 
 /*
  * g_unichar_to_utf8:
- * @c: a ISO10646 character code
+ * @c: a Unicode character code
  * @outbuf: output buffer, must have at least 6 bytes of space.
  *       If %NULL, the length will be computed and returned
  *       and nothing will be written to @outbuf.
@@ -116,8 +141,10 @@ static const gchar *const g_utf8_skip = utf8_skip_data;
 static int
 g_unichar_to_utf8 (gunichar c, gchar * outbuf)
 {
+  /* If this gets modified, also update the copy in g_string_insert_unichar() */
   guint len = 0;
   int first;
+  int i;
 
   if (c < 0x80)
     {
@@ -152,7 +179,6 @@ g_unichar_to_utf8 (gunichar c, gchar * outbuf)
 
   if (outbuf)
     {
-      guint i;
       for (i = len - 1; i > 0; --i)
 	{
 	  outbuf[i] = (c & 0x3f) | 0x80;
@@ -167,15 +193,16 @@ g_unichar_to_utf8 (gunichar c, gchar * outbuf)
 /*
  * g_utf8_to_ucs4_fast:
  * @str: a UTF-8 encoded string
- * @len: the maximum length of @str to use. If @len < 0, then
- *       the string is nul-terminated.
+ * @len: the maximum length of @str to use, in bytes. If @len < 0,
+ *       then the string is nul-terminated.
  * @items_written: location to store the number of characters in the
  *                 result, or %NULL.
  *
  * Convert a string from UTF-8 to a 32-bit fixed width
  * representation as UCS-4, assuming valid UTF-8 input.
  * This function is roughly twice as fast as g_utf8_to_ucs4()
- * but does no error checking on the input.
+ * but does no error checking on the input. A trailing 0 character
+ * will be added to the string after the converted text.
  *
  * Return value: a pointer to a newly allocated UCS-4 string.
  *               This value must be freed with g_free().
@@ -183,9 +210,8 @@ g_unichar_to_utf8 (gunichar c, gchar * outbuf)
 static gunichar *
 g_utf8_to_ucs4_fast (const gchar * str, glong len, glong * items_written)
 {
-  gint j, charlen;
   gunichar *result;
-  gint n_chars, i;
+  gsize n_chars, i;
   const gchar *p;
 
   g_return_val_if_fail (str != NULL, NULL);
@@ -209,56 +235,44 @@ g_utf8_to_ucs4_fast (const gchar * str, glong len, glong * items_written)
 	}
     }
 
-  result = g_new (gunichar, n_chars + 1);
+  result = g_malloc (sizeof (gunichar) * (n_chars + 1));
   if (!result)
     return NULL;
 
   p = str;
   for (i = 0; i < n_chars; i++)
     {
-      gunichar wc = ((const unsigned char *) p)[0];
+      gunichar wc = (guchar) * p++;
 
       if (wc < 0x80)
 	{
 	  result[i] = wc;
-	  p++;
 	}
       else
 	{
-	  if (wc < 0xe0)
+	  gunichar mask = 0x40;
+
+	  if (G_UNLIKELY ((wc & mask) == 0))
 	    {
-	      charlen = 2;
-	      wc &= 0x1f;
-	    }
-	  else if (wc < 0xf0)
-	    {
-	      charlen = 3;
-	      wc &= 0x0f;
-	    }
-	  else if (wc < 0xf8)
-	    {
-	      charlen = 4;
-	      wc &= 0x07;
-	    }
-	  else if (wc < 0xfc)
-	    {
-	      charlen = 5;
-	      wc &= 0x03;
-	    }
-	  else
-	    {
-	      charlen = 6;
-	      wc &= 0x01;
+	      /* It's an out-of-sequence 10xxxxxxx byte.
+	       * Rather than making an ugly hash of this and the next byte
+	       * and overrunning the buffer, it's more useful to treat it
+	       * with a replacement character */
+	      result[i] = 0xfffd;
+	      continue;
 	    }
 
-	  for (j = 1; j < charlen; j++)
+	  do
 	    {
 	      wc <<= 6;
-	      wc |= ((const unsigned char *) p)[j] & 0x3f;
+	      wc |= (guchar) (*p++) & 0x3f;
+	      mask <<= 5;
 	    }
+	  while ((wc & mask) != 0);
+
+	  wc &= mask - 1;
 
 	  result[i] = wc;
-	  p += charlen;
 	}
     }
   result[i] = 0;
@@ -272,13 +286,13 @@ g_utf8_to_ucs4_fast (const gchar * str, glong len, glong * items_written)
 /*
  * g_ucs4_to_utf8:
  * @str: a UCS-4 encoded string
- * @len: the maximum length of @str to use. If @len < 0, then
- *       the string is terminated with a 0 character.
- * @items_read: location to store number of characters read read, or %NULL.
+ * @len: the maximum length (number of characters) of @str to use.
+ *       If @len < 0, then the string is nul-terminated.
+ * @items_read: location to store number of characters read, or %NULL.
  * @items_written: location to store number of bytes written or %NULL.
  *                 The value here stored does not include the trailing 0
  *                 byte.
- * @error: location to store the error occuring, or %NULL to ignore
+ * @error: location to store the error occurring, or %NULL to ignore
  *         errors. Any of the errors in #GConvertError other than
  *         %G_CONVERT_ERROR_NO_CONVERSION may occur.
  *
@@ -288,7 +302,9 @@ g_utf8_to_ucs4_fast (const gchar * str, glong len, glong * items_written)
  * Return value: a pointer to a newly allocated UTF-8 string.
  *               This value must be freed with g_free(). If an
  *               error occurs, %NULL will be returned and
- *               @error set.
+ *               @error set. In that case, @items_read will be
+ *               set to the position of the first invalid input
+ *               character.
  **/
 static gchar *
 g_ucs4_to_utf8 (const gunichar * str,
@@ -307,12 +323,7 @@ g_ucs4_to_utf8 (const gunichar * str,
 	break;
 
       if (str[i] >= 0x80000000)
-	{
-	  if (items_read)
-	    *items_read = i;
-
-	  goto err_out;
-	}
+	goto err_out;
 
       result_length += UTF8_LENGTH (str[i]);
     }
@@ -374,8 +385,7 @@ stringprep_utf8_to_ucs4 (const char *str, ssize_t len, size_t * items_written)
  *
  * Return value: a pointer to a newly allocated UTF-8 string.
  *               This value must be deallocated by the caller.
- *               If an error occurs, %NULL will be returned and @error
- *               set.
+ *               If an error occurs, %NULL will be returned.
  **/
 char *
 stringprep_ucs4_to_utf8 (const uint32_t * str, ssize_t len,

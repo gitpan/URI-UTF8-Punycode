@@ -1,23 +1,31 @@
 /* punycode.c --- Implementation of punycode used to ASCII encode IDN's.
- * Copyright (C) 2002, 2003, 2004  Simon Josefsson
- *
- * This file is part of GNU Libidn.
- *
- * GNU Libidn is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * GNU Libidn is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with GNU Libidn; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
- *
- */
+   Copyright (C) 2002-2012 Simon Josefsson
+
+   This file is part of GNU Libidn.
+
+   GNU Libidn is free software: you can redistribute it and/or
+   modify it under the terms of either:
+
+     * the GNU Lesser General Public License as published by the Free
+       Software Foundation; either version 3 of the License, or (at
+       your option) any later version.
+
+   or
+
+     * the GNU General Public License as published by the Free
+       Software Foundation; either version 2 of the License, or (at
+       your option) any later version.
+
+   or both in parallel, as here.
+
+   GNU Libidn is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received copies of the GNU General Public License and
+   the GNU Lesser General Public License along with this program.  If
+   not, see <http://www.gnu.org/licenses/>. */
 
 /*
  * This file is derived from RFC 3492bis written by Adam M. Costello.
@@ -148,7 +156,7 @@ adapt (punycode_uint delta, punycode_uint numpoints, int firsttime)
 /*** Main encode function ***/
 
 /**
- * punycode_encode - encode Unicode to Punycode
+ * punycode_encode:
  * @input_length: The number of code points in the @input array and
  *   the number of flags in the @case_flags array.
  * @input: An array of code points.  They are presumed to be Unicode
@@ -299,7 +307,7 @@ punycode_encode (size_t input_length,
 /*** Main decode function ***/
 
 /**
- * punycode_decode - decode Punycode to Unicode
+ * punycode_decode:
  * @input_length: The number of ASCII code points in the @input array.
  * @input: An array of ASCII code points (0..7F).
  * @output_length: The caller passes in the maximum number of code

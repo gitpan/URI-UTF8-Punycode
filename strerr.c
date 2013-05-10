@@ -21,7 +21,6 @@
  */
 
 #include "pcodes.h"
-#include "spreps.h"
 
 /**
  * punycode_strerror:

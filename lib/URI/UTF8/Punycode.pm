@@ -9,7 +9,7 @@ our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw($VERSION);
 our @EXPORT    = qw(puny_enc puny_dec);
 
-our $VERSION = '0.96';
+our $VERSION = '0.97';
 
 use XSLoader;
 XSLoader::load('URI::UTF8::Punycode', $VERSION);
@@ -26,8 +26,8 @@ URI::UTF8::Punycode - Punycode conversion of UTF-8 string.
 
   use URI::UTF8::Punycode;
 
-  $enc = puny_enc($utf8str);
-  $dec = puny_dec($punycode);
+  $punycode = puny_enc($utf8str);
+  $utf8onsv = puny_dec($punycode);
 
 =head1 DESCRIPTION
 
