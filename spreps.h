@@ -30,18 +30,6 @@
 #ifndef STRINGPREP_H
 # define STRINGPREP_H
 
-# ifndef IDNAPI
-#  if defined LIBIDN_BUILDING && defined HAVE_VISIBILITY && HAVE_VISIBILITY
-#   define IDNAPI __attribute__((__visibility__("default")))
-#  elif defined LIBIDN_BUILDING && defined _MSC_VER && ! defined LIBIDN_STATIC
-#   define IDNAPI __declspec(dllexport)
-#  elif defined _MSC_VER && ! defined LIBIDN_STATIC
-#   define IDNAPI __declspec(dllimport)
-#  else
-#   define IDNAPI
-#  endif
-# endif
-
 #include <stddef.h>		/* size_t */
 
 #ifdef _MSC_VER
@@ -60,10 +48,10 @@ extern "C"
 
 # define STRINGPREP_VERSION "1.26"
 
-extern IDNAPI uint32_t *stringprep_utf8_to_ucs4 (const char *str,
+uint32_t *stringprep_utf8_to_ucs4 (const char *str,
 						   ssize_t len,
 						   size_t * items_written);
-extern IDNAPI char *stringprep_ucs4_to_utf8 (const uint32_t * str,
+char *stringprep_ucs4_to_utf8 (const uint32_t * str,
 					       ssize_t len,
 					       size_t * items_read,
 					       size_t * items_written);

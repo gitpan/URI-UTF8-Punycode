@@ -70,16 +70,46 @@ SV*
 puny_enc(str)
   char *str;
   CODE:
+    char *set;
+     int  lpc;
+    char *tok;
+    char *all;
+     int  len = 1;
     char *tmp;
       SV *u8n;
-    if((tmp = _puny_enc(aTHX_ str)) != NULL){
-      u8n = newSVpv(tmp, 0);
-      free(tmp);
-      //SvUTF8_off(u8n);
-      SvTAINTED_on(u8n);
-    } else{
-      Perl_croak(aTHX_ "subroutine puny_enc()");
+    if((set = (char*)malloc(strlen(str)+1)) == NULL){
+      Perl_croak(aTHX_ "failure malloc in puny_enc()");
     }
+    if((all = (char*)malloc(1)) == NULL){
+      free(set);
+      Perl_croak(aTHX_ "failure malloc in puny_enc()");
+    }
+    all[0] = '\0';
+    strcpy(set, str);
+    for(lpc=0;;) {
+      tok = strtok((lpc++==0)? set : NULL, ".");
+      if(tok != NULL){
+        if((tmp = _puny_enc(aTHX_ tok)) != NULL){
+          len += strlen(tmp) + 1;
+          if((all = (char*)realloc(all, (len + 1))) == NULL){
+            free(set); free(all);
+            Perl_croak(aTHX_ "failure realloc in puny_enc()");
+          }
+          strcat(all, tmp);
+          free(tmp);
+          strcat(all, ".");
+        } else{
+          free(set); free(all);
+          Perl_croak(aTHX_ "subroutine puny_enc()");
+        }
+      } else{ break; }
+    }
+    free(set);
+    all[(len - 2)] = '\0';
+    u8n = newSVpv(all, 0);
+    free(all);
+    //SvUTF8_off(u8n);
+    SvTAINTED_on(u8n);
     RETVAL = u8n;
   OUTPUT:
     RETVAL
@@ -88,17 +118,47 @@ SV*
 puny_dec(str)
   char *str;
   CODE:
+    char *set;
+     int  lpc;
+    char *tok;
+    char *all;
+     int  len = 1;
     char *tmp;
       SV *u8s;
-    if(strncmp(str, "xn--", 4) == 0){ str += 4; }
-    if((tmp = _puny_dec(aTHX_ str)) != NULL){
-      u8s = newSVpv(tmp, 0);
-      free(tmp);
-      sv_utf8_upgrade(u8s);
-      SvTAINTED_on(u8s);
-    } else{
-      Perl_croak(aTHX_ "subroutine puny_dec_flags()");
+    if((set = (char*)malloc(strlen(str)+1)) == NULL){
+      Perl_croak(aTHX_ "failure malloc in puny_enc()");
     }
+    if((all = (char*)malloc(1)) == NULL){
+      free(set);
+      Perl_croak(aTHX_ "failure malloc in puny_enc()");
+    }
+    all[0] = '\0';
+    strcpy(set, str);
+    for(lpc=0;;) {
+      tok = strtok((lpc++==0)? set : NULL, ".");
+      if(tok != NULL){
+        if(strncmp(tok, "xn--", 4) == 0){ tok += 4; }
+        if((tmp = _puny_dec(aTHX_ tok)) != NULL){
+          len += strlen(tmp) + 1;
+          if((all = (char*)realloc(all, (len + 1))) == NULL){
+            free(set); free(all);
+            Perl_croak(aTHX_ "failure realloc in puny_enc()");
+          }
+          strcat(all, tmp);
+          free(tmp);
+          strcat(all, ".");
+        } else{
+          free(set); free(all);
+          Perl_croak(aTHX_ "subroutine puny_enc()");
+        }
+      } else{ break; }
+    }
+    free(set);
+    all[(len - 2)] = '\0';
+    u8s = newSVpv(all, 0);
+    free(all);
+    sv_utf8_upgrade(u8s);
+    SvTAINTED_on(u8s);
     RETVAL = u8s;
   OUTPUT:
     RETVAL

@@ -1,6 +1,9 @@
 Revision history for Perl extension URI::UTF8::Punycode.
 
-0.97  Fri Oct 22 22:00:00 2010
+1.00  Fri May 24 00:00:00 2013
+	add features: +processing to all level of domains.
+
+0.97  Fri May 10 22:00:00 2013
 	fix possibility of memory leak on *char data to SV and freeing
 	utf8 and tainted flags is on at return value
 	upgrading libidn 1.19 to 1.26
